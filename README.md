@@ -3,9 +3,9 @@
 	Cadastro de clientes
 
 	- Aceitar pessoa jurídica na listagem;
-        - Trabalhar com modificadores de acesso, getters and setters;
-        - Implementar interface para classificação de clientes
-        - Implementar interface para utilização de endereço de cobrança
+	- Trabalhar com modificadores de acesso, getters and setters;
+	- Implementar interface para classificação de clientes
+	- Implementar interface para utilização de endereço de cobrança
 
 - PHP OO (projeto fase 1)
 	
