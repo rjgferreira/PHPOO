@@ -15,41 +15,57 @@ $path = urldecode(substr($rota['path'], 1));
 <div class="row">
     <div class="container">
     <?php
-        require_once('Cliente.php');
+        require_once('Fisica.php');
+        require_once('Juridica.php');
         $clientes = [];
         for ($i = 0; $i < 10; $i++){
-            $clientes[$i] = new Cliente();
-            $clientes[$i]->nome = "Nome cliente $i";
-            $clientes[$i]->email = "emailcliente$i@email.com";
-            $clientes[$i]->endereco = "Rua $i";
-            $clientes[$i]->numero = "$i";
-            $clientes[$i]->complemento = "Complemento $i";
-            $clientes[$i]->cep = sprintf("%08s", $i);
-            $clientes[$i]->cidade = "Cidade $i";
-            $clientes[$i]->uf = "UF $i";
-            $clientes[$i]->nascimento = sprintf("%02s", $i) . "/" . sprintf("%02s", $i) . "/2016";
-            $clientes[$i]->sexo = ($i % 2 == 0 ? 'M' : 'F');
-            $clientes[$i]->cpf = sprintf("%011s", $i);
+            if($i % 2 == 0)
+                $clientes[$i] = new Fisica();
+            else
+                $clientes[$i] = new Juridica();
+
+            $clientes[$i]->setNome("Nome cliente $i")
+                        ->setEmail("emailcliente$i@email.com")
+                        ->setEndereco("Rua $i")
+                        ->setNumero("$i")
+                        ->setComplemento("Complemento $i")
+                        ->setCep(sprintf("%08s", $i))
+                        ->setCidade("Cidade $i")
+                        ->setUf("UF $i")
+                        ->setNascimento(sprintf("%02s", $i) . "/" . sprintf("%02s", $i) . "/2016")
+                        ->setSexo(($i % 2 == 0 ? 'M' : 'F'));
+            if($i % 2 == 0)
+                $clientes[$i]->setCpf(sprintf("%011s", $i));
+            else {
+                $clientes[$i]->setCnpj(sprintf("%014s", $i));
+                $clientes[$i]->setEndCobranca("Endere&ccedil;o de cobran&ccedil;a ".$i);
+            }
+            $clientes[$i]->classificar(($i>4?$i-4:$i+1));
         }
+
         if($path=='DESC')
-            arsort($clientes);
-        else if($path=='ASC')
-            asort($clientes);
-        if(strlen($path) == 11){
+            krsort($clientes);
+        if($path=='ASC')
+            ksort($clientes);
+
+        if($path!='' && $path!='DESC' && $path!='ASC'){
             echo "<h2>Listar informa&ccedil;&otilde;es de cliente</h2>";
             $vrfy = function ($c) use ($path) {
-                if ($c->cpf == $path) {
-                    echo '<table class="table"><tr><td align="right" width="15%"><b>Nome:</b></td><td>' . $c->nome . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>E-mail:</b></td><td>' . $c->email . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Endereco:</b></td><td>' . $c->endereco . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Numero:</b></td><td>' . $c->numero . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Complemento:</b></td><td>' . $c->complemento . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>CEP:</b></td><td>' . $c->cep . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Cidade:</b></td><td>' . $c->cidade . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>UF:</b></td><td>' . $c->uf . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Nascimento:</b></td><td>' . $c->nascimento . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Sexo:</b></td><td>' . $c->sexo . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>CPF:</b></td><td>' . $c->cpf . '</table><br><br><br><a class="btn btn-primary" href="./">VOLTAR</a>';
+                if(($c instanceof Fisica && $c->getCpf() == $path) || ($c instanceof Juridica && $c->getCnpj() == $path)){
+                    echo '<table class="table"><tr><td align="right" width="15%"><b>Nome:</b></td><td>' . $c->getNome() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>E-mail:</b></td><td>' . $c->getEmail() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>Endere&ccedil;o:</b></td><td>' . $c->getEndereco() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>Numero:</b></td><td>' . $c->getNumero() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>Complemento:</b></td><td>' . $c->getComplemento() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>CEP:</b></td><td>' . $c->getCep() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>Cidade:</b></td><td>' . $c->getCidade() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>UF:</b></td><td>' . $c->getUf() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>Nascimento:</b></td><td>' . $c->getNascimento() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>Sexo:</b></td><td>' . $c->getSexo() . "</td></tr>" .
+                        '<tr><td align="right" width="15%"><b>Classifica&ccedil;&atilde;o:</b></td><td>' . $c->getClassificacao() . "</td></tr>" .
+                        ($c instanceof Juridica ? '<tr><td align="right" width="15%"><b>Pessoa Jur&iacute;dica</b></td><td>'.'CNPJ: '.$c->getCnpj().'</td>':'<td align="right" width="15%"><b>Pessoa F&iacute;sica</b></td><td>'.'CPF: '.$c->getCpf().'</td></tr>') .
+                        ($c instanceof Juridica ? '<tr><td align="right" width="15%"><b>Endere&ccedil;o 2</b>:</td><td>'.$c->getEndCobranca().'</td></tr>':'') .
+                        '</table><a class="btn btn-primary" href="./">VOLTAR</a>';
                 }else{
                     return false;
                 }
@@ -59,15 +75,20 @@ $path = urldecode(substr($rota['path'], 1));
         }else{
             echo '<h2>Listagem de clientes</h2>';
             echo '<a style="margin-left:5px;" class="btn btn-primary pull-right" href="/DESC">&downarrow;</a><a class="btn btn-primary pull-right" href="/ASC">&uparrow;</a>';
-            echo '<table class="table"><thead><th>Nome</th><th>E-mail</th><th>Sexo</th></thead><tbody>';
+            echo '<table class="table"><thead><th>Nome</th><th>E-mail</th><th>Pessoa</th><th>Classifica&ccedil;&atilde;o</th></thead><tbody>';
             foreach ($clientes as $cliente) {
-                echo '<tr><td>'.$cliente->nome . '</td><td>'.$cliente->email . '</td><td>'.$cliente->sexo . '</td><td align="right"><a class="btn btn-default" href="/' . $cliente->cpf . '">saber +</a></td></tr>';
+                echo    '<tr><td>'.$cliente->getNome() .
+                        '</td><td>' . $cliente->getEmail() .
+                        '</td><td>' . ($cliente instanceof Juridica && $cliente->getCnpj()!=''?"Jur&iacute;dica":"F&iacute;sica") .
+                        '</td><td>'.$cliente->getClassificacao() .
+                        '</td><td align="right"><a class="btn btn-default" href="/'.($cliente instanceof Juridica && $cliente->getCnpj()!=''?$cliente->getCnpj():$cliente->getCpf()).'">saber +</a></td></tr>';
             }
             echo '</tbody></table>';
         }
     ?>
     </div>
 </div>
+
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
