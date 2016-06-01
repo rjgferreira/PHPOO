@@ -1,8 +1,13 @@
 <?php
-require_once"Cliente.php";
-require_once "ClassificacaoInterface.php";
-class Fisica extends Cliente implements ClassifyInterface{
+namespace RJGF\Clientes\Types;
+
+use RJGF\Clientes\Cliente;
+use RJGF\Clientes\Interfaces\ClassificacaoInterface;
+
+class PssFisica extends Cliente implements ClassificacaoInterface{
+
     private $cpf;
+
     public function classificar($nota){
         parent::setClassificacao($nota);
     }

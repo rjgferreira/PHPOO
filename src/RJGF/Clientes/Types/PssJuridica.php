@@ -1,8 +1,11 @@
 <?php
-require_once"Cliente.php";
-require_once "ClassificacaoInterface.php";
-require_once "CobrancaInterface.php";
-class Juridica extends Cliente implements ClassifyInterface, CobrancaInterface
+namespace RJGF\Clientes\Types;
+
+use RJGF\Clientes\Cliente;
+use RJGF\Clientes\Interfaces\EndrCobrancaInterface;
+use RJGF\Clientes\Interfaces\ClassificacaoInterface;
+
+class PssJuridica extends Cliente implements ClassificacaoInterface, EndrCobrancaInterface
 {
     private $cnpj;
     private $endCoranca;

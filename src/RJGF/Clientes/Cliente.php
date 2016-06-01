@@ -1,5 +1,8 @@
 <?php
-class Cliente{
+namespace RJGF\Clientes;
+
+abstract class Cliente{
+
 	private $nome;
 	private $email;
 	private $endereco;

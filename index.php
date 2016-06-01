@@ -1,4 +1,7 @@
 <?php
+define('CLASS_DIR','src/');
+set_include_path(get_include_path().PATH_SEPARATOR.CLASS_DIR);
+spl_autoload_register();
 $rota = parse_url("http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 $path = urldecode(substr($rota['path'], 1));
 ?>
@@ -15,16 +18,14 @@ $path = urldecode(substr($rota['path'], 1));
 <div class="row">
     <div class="container">
     <?php
-        require_once('Fisica.php');
-        require_once('Juridica.php');
         $clientes = [];
         for ($i = 0; $i < 10; $i++){
             if($i % 2 == 0)
-                $clientes[$i] = new Fisica();
+                $clientes[$i] = new RJGF\Clientes\Types\PssFisica();
             else
-                $clientes[$i] = new Juridica();
+                $clientes[$i] = new RJGF\Clientes\Types\PssJuridica();
 
-            $clientes[$i]->setNome("Nome cliente $i")
+            $clientes[$i]->setNome("Nome Clientes $i")
                         ->setEmail("emailcliente$i@email.com")
                         ->setEndereco("Rua $i")
                         ->setNumero("$i")
@@ -49,9 +50,9 @@ $path = urldecode(substr($rota['path'], 1));
             ksort($clientes);
 
         if($path!='' && $path!='DESC' && $path!='ASC'){
-            echo "<h2>Listar informa&ccedil;&otilde;es de cliente</h2>";
+            echo "<h2>Listar informa&ccedil;&otilde;es de Clientes</h2>";
             $vrfy = function ($c) use ($path) {
-                if(($c instanceof Fisica && $c->getCpf() == $path) || ($c instanceof Juridica && $c->getCnpj() == $path)){
+                if(($c instanceof \RJGF\Clientes\Types\PssFisica && $c->getCpf() == $path) || ($c instanceof \RJGF\Clientes\Types\PssJuridica && $c->getCnpj() == $path)){
                     echo '<table class="table"><tr><td align="right" width="15%"><b>Nome:</b></td><td>' . $c->getNome() . "</td></tr>" .
                         '<tr><td align="right" width="15%"><b>E-mail:</b></td><td>' . $c->getEmail() . "</td></tr>" .
                         '<tr><td align="right" width="15%"><b>Endere&ccedil;o:</b></td><td>' . $c->getEndereco() . "</td></tr>" .
@@ -63,8 +64,8 @@ $path = urldecode(substr($rota['path'], 1));
                         '<tr><td align="right" width="15%"><b>Nascimento:</b></td><td>' . $c->getNascimento() . "</td></tr>" .
                         '<tr><td align="right" width="15%"><b>Sexo:</b></td><td>' . $c->getSexo() . "</td></tr>" .
                         '<tr><td align="right" width="15%"><b>Classifica&ccedil;&atilde;o:</b></td><td>' . $c->getClassificacao() . "</td></tr>" .
-                        ($c instanceof Juridica ? '<tr><td align="right" width="15%"><b>Pessoa Jur&iacute;dica</b></td><td>'.'CNPJ: '.$c->getCnpj().'</td>':'<td align="right" width="15%"><b>Pessoa F&iacute;sica</b></td><td>'.'CPF: '.$c->getCpf().'</td></tr>') .
-                        ($c instanceof Juridica ? '<tr><td align="right" width="15%"><b>Endere&ccedil;o 2</b>:</td><td>'.$c->getEndCobranca().'</td></tr>':'') .
+                        ($c instanceof \RJGF\Clientes\Types\PssJuridica ? '<tr><td align="right" width="15%"><b>Pessoa Jur&iacute;dica</b></td><td>'.'CNPJ: '.$c->getCnpj().'</td>':'<td align="right" width="15%"><b>Pessoa F&iacute;sica</b></td><td>'.'CPF: '.$c->getCpf().'</td></tr>') .
+                        ($c instanceof \RJGF\Clientes\Types\PssJuridica ? '<tr><td align="right" width="15%"><b>Endere&ccedil;o 2</b>:</td><td>'.$c->getEndCobranca().'</td></tr>':'') .
                         '</table><a class="btn btn-primary" href="./">VOLTAR</a>';
                 }else{
                     return false;
@@ -79,9 +80,9 @@ $path = urldecode(substr($rota['path'], 1));
             foreach ($clientes as $cliente) {
                 echo    '<tr><td>'.$cliente->getNome() .
                         '</td><td>' . $cliente->getEmail() .
-                        '</td><td>' . ($cliente instanceof Juridica && $cliente->getCnpj()!=''?"Jur&iacute;dica":"F&iacute;sica") .
+                        '</td><td>' . ($cliente instanceof \RJGF\Clientes\Types\PssJuridica && $cliente->getCnpj()!=''?"Jur&iacute;dica":"F&iacute;sica") .
                         '</td><td>'.$cliente->getClassificacao() .
-                        '</td><td align="right"><a class="btn btn-default" href="/'.($cliente instanceof Juridica && $cliente->getCnpj()!=''?$cliente->getCnpj():$cliente->getCpf()).'">saber +</a></td></tr>';
+                        '</td><td align="right"><a class="btn btn-default" href="/'.($cliente instanceof \RJGF\Clientes\Types\PssJuridica && $cliente->getCnpj()!=''?$cliente->getCnpj():$cliente->getCpf()).'">saber +</a></td></tr>';
             }
             echo '</tbody></table>';
         }
