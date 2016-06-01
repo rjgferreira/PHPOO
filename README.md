@@ -1,11 +1,20 @@
+- PHP POO (projeto fase 3)
+
+	Refatoração
+
+	- Trabalhar com namespaces;
+    - Utilizar classes abstratas;
+    - Estruturar o projeto (diretórios, nomes de arquivos e classes) seguindo a PSR-0
+    - Implementar autoload no carregamento das classes
+
 - PHP POO (projeto fase 2)
 	
 	Cadastro de clientes
 
 	- Aceitar pessoa jurídica na listagem;
-        - Trabalhar com modificadores de acesso, getters and setters;
-        - Implementar interface para classificação de clientes
-        - Implementar interface para utilização de endereço de cobrança
+    - Trabalhar com modificadores de acesso, getters and setters;
+    - Implementar interface para classificação de clientes
+    - Implementar interface para utilização de endereço de cobrança
 
 - PHP OO (projeto fase 1)
 	
