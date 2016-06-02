@@ -3,18 +3,24 @@
 	Refatoração
 
 	- Trabalhar com namespaces;
-    - Utilizar classes abstratas;
-    - Estruturar o projeto (diretórios, nomes de arquivos e classes) seguindo a PSR-0
-    - Implementar autoload no carregamento das classes
+	- Utilizar classes abstratas;
+    	- Estruturar o projeto (diretórios, nomes de arquivos e classes) seguindo a PSR-0
+    	- Implementar autoload no carregamento das classes
 
 - PHP POO (projeto fase 2)
 	
 	Cadastro de clientes
 
 	- Aceitar pessoa jurídica na listagem;
+<<<<<<< HEAD
     - Trabalhar com modificadores de acesso, getters and setters;
     - Implementar interface para classificação de clientes
     - Implementar interface para utilização de endereço de cobrança
+=======
+	- Trabalhar com modificadores de acesso, getters and setters;
+	- Implementar interface para classificação de clientes
+	- Implementar interface para utilização de endereço de cobrança
+>>>>>>> 698e26f63531b283fee76c54162cdf3cf4e8d023
 
 - PHP OO (projeto fase 1)
 	
