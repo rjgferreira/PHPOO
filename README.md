@@ -1,3 +1,13 @@
+- PHP POO (projeto fase 4)
+
+	Persistência de dados
+
+	- Criar classe para perssistência de dados (fixture);
+	- Injetar no construtor dessa classe um objeto PDO;
+	- Criar um método 'persist' que receberá como dependência um objeto do tipo Cliente;
+	- Outro método, 'flush', ao ser executado irá finalmente gravar as informações (sem outras responsabilidades);
+	- A listagem dos dados deve ser chamada a partir do banco de dados e não mais de um conjunto de arrays.
+
 - PHP POO (projeto fase 3)
 
 	Refatoração

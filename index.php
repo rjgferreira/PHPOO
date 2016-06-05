@@ -1,7 +1,4 @@
 <?php
-define('CLASS_DIR','src/');
-set_include_path(get_include_path().PATH_SEPARATOR.CLASS_DIR);
-spl_autoload_register();
 $rota = parse_url("http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 $path = urldecode(substr($rota['path'], 1));
 ?>
@@ -18,71 +15,49 @@ $path = urldecode(substr($rota['path'], 1));
 <div class="row">
     <div class="container">
     <?php
-        $clientes = [];
-        for ($i = 0; $i < 10; $i++){
-            if($i % 2 == 0)
-                $clientes[$i] = new RJGF\Clientes\Types\PssFisica();
+        $conn = new \PDO("mysql:host=localhost;dbname=oo", "root", "", array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+        if($path!='' && $path!='DESC' && $path!='ASC') {
+            // Se existe ID
+            $sql = "SELECT * FROM clientes";
+            if(strlen($path)==11)
+                $sql .= " WHERE cpf = '$path'";
             else
-                $clientes[$i] = new RJGF\Clientes\Types\PssJuridica();
-
-            $clientes[$i]->setNome("Nome Clientes $i")
-                        ->setEmail("emailcliente$i@email.com")
-                        ->setEndereco("Rua $i")
-                        ->setNumero("$i")
-                        ->setComplemento("Complemento $i")
-                        ->setCep(sprintf("%08s", $i))
-                        ->setCidade("Cidade $i")
-                        ->setUf("UF $i")
-                        ->setNascimento(sprintf("%02s", $i) . "/" . sprintf("%02s", $i) . "/2016")
-                        ->setSexo(($i % 2 == 0 ? 'M' : 'F'));
-            if($i % 2 == 0)
-                $clientes[$i]->setCpf(sprintf("%011s", $i));
-            else {
-                $clientes[$i]->setCnpj(sprintf("%014s", $i));
-                $clientes[$i]->setEndCobranca("Endere&ccedil;o de cobran&ccedil;a ".$i);
-            }
-            $clientes[$i]->classificar(($i>4?$i-4:$i+1));
-        }
-
-        if($path=='DESC')
-            krsort($clientes);
-        if($path=='ASC')
-            ksort($clientes);
-
-        if($path!='' && $path!='DESC' && $path!='ASC'){
+                $sql .= " WHERE cnpj = '$path'";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $clientes = $stmt->fetch(PDO::FETCH_ASSOC);
             echo "<h2>Listar informa&ccedil;&otilde;es de Clientes</h2>";
-            $vrfy = function ($c) use ($path) {
-                if(($c instanceof \RJGF\Clientes\Types\PssFisica && $c->getCpf() == $path) || ($c instanceof \RJGF\Clientes\Types\PssJuridica && $c->getCnpj() == $path)){
-                    echo '<table class="table"><tr><td align="right" width="15%"><b>Nome:</b></td><td>' . $c->getNome() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>E-mail:</b></td><td>' . $c->getEmail() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Endere&ccedil;o:</b></td><td>' . $c->getEndereco() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Numero:</b></td><td>' . $c->getNumero() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Complemento:</b></td><td>' . $c->getComplemento() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>CEP:</b></td><td>' . $c->getCep() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Cidade:</b></td><td>' . $c->getCidade() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>UF:</b></td><td>' . $c->getUf() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Nascimento:</b></td><td>' . $c->getNascimento() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Sexo:</b></td><td>' . $c->getSexo() . "</td></tr>" .
-                        '<tr><td align="right" width="15%"><b>Classifica&ccedil;&atilde;o:</b></td><td>' . $c->getClassificacao() . "</td></tr>" .
-                        ($c instanceof \RJGF\Clientes\Types\PssJuridica ? '<tr><td align="right" width="15%"><b>Pessoa Jur&iacute;dica</b></td><td>'.'CNPJ: '.$c->getCnpj().'</td>':'<td align="right" width="15%"><b>Pessoa F&iacute;sica</b></td><td>'.'CPF: '.$c->getCpf().'</td></tr>') .
-                        ($c instanceof \RJGF\Clientes\Types\PssJuridica ? '<tr><td align="right" width="15%"><b>Endere&ccedil;o 2</b>:</td><td>'.$c->getEndCobranca().'</td></tr>':'') .
-                        '</table><a class="btn btn-primary" href="./">VOLTAR</a>';
-                }else{
-                    return false;
-                }
-                return false;
-            };
-            array_walk($clientes, $vrfy);
+            echo '<table class="table"><tr><td align="right" width="15%"><b>Nome:</b></td><td>' . $clientes['nome'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>E-mail:</b></td><td>' . $clientes['email'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>Endere&ccedil;o:</b></td><td>' . $clientes['endereco'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>Numero:</b></td><td>' . $clientes['numero'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>Complemento:</b></td><td>' . $clientes['complemento'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>CEP:</b></td><td>' . $clientes['cep'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>Cidade:</b></td><td>' . $clientes['cidade'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>UF:</b></td><td>' . $clientes['uf'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>Nascimento:</b></td><td>' . $clientes['nascimento'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>Sexo:</b></td><td>' . $clientes['sexo'] . "</td></tr>" .
+                '<tr><td align="right" width="15%"><b>Classifica&ccedil;&atilde;o:</b></td><td>' . $clientes['classificacao'] . "</td></tr>" .
+                ($clientes['cnpj']!='' ? '<tr><td align="right" width="15%"><b>Pessoa Jur&iacute;dica</b></td><td>'.'CNPJ: '.$clientes['cnpj'].'</td>':'<td align="right" width="15%"><b>Pessoa F&iacute;sica</b></td><td>'.'CPF: '.$clientes['cpf'].'</td></tr>') .
+                ($clientes['cnpj']!='' ? '<tr><td align="right" width="15%"><b>Endere&ccedil;o 2</b>:</td><td>'.$clientes['enderecobranca'].'</td></tr>':'') .
+                '</table><a class="btn btn-primary" href="./">VOLTAR</a>';
+
         }else{
+            $sql = "SELECT id, nome, email, cpf, cnpj, classificacao FROM clientes";
+            if($path=='DESC')
+                $sql .= " ORDER BY id $path";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo '<h2>Listagem de clientes</h2>';
             echo '<a style="margin-left:5px;" class="btn btn-primary pull-right" href="/DESC">&downarrow;</a><a class="btn btn-primary pull-right" href="/ASC">&uparrow;</a>';
             echo '<table class="table"><thead><th>Nome</th><th>E-mail</th><th>Pessoa</th><th>Classifica&ccedil;&atilde;o</th></thead><tbody>';
             foreach ($clientes as $cliente) {
-                echo    '<tr><td>'.$cliente->getNome() .
-                        '</td><td>' . $cliente->getEmail() .
-                        '</td><td>' . ($cliente instanceof \RJGF\Clientes\Types\PssJuridica && $cliente->getCnpj()!=''?"Jur&iacute;dica":"F&iacute;sica") .
-                        '</td><td>'.$cliente->getClassificacao() .
-                        '</td><td align="right"><a class="btn btn-default" href="/'.($cliente instanceof \RJGF\Clientes\Types\PssJuridica && $cliente->getCnpj()!=''?$cliente->getCnpj():$cliente->getCpf()).'">saber +</a></td></tr>';
+                echo    '<tr><td>'.$cliente['nome'] .
+                    '</td><td>' . $cliente['email'] .
+                    '</td><td>' . ($cliente['cnpj']!=''?"Jur&iacute;dica":"F&iacute;sica") .
+                    '</td><td>'.$cliente['classificacao'] .
+                    '</td><td align="right"><a class="btn btn-default" href="/'.($cliente['cnpj']!=''?$cliente['cnpj']:$cliente['cpf']).'">saber +</a></td></tr>';
             }
             echo '</tbody></table>';
         }
